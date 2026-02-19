@@ -12,6 +12,9 @@ nebariapp:
   service:
     name: ""  # Defaults to {{ fullname }}
     port: 80
+  routing:
+    routes:
+      - pathPrefix: /
   auth:
     enabled: true
     provider: keycloak

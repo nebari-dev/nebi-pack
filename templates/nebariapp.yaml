@@ -11,6 +11,10 @@ spec:
   service:
     name: {{ .Values.nebariapp.service.name | default (include "nebari-nebi-pack.fullname" .) }}
     port: {{ .Values.nebariapp.service.port | default 80 }}
+  {{- with .Values.nebariapp.routing }}
+  routing:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.nebariapp.auth }}
   auth:
     enabled: {{ .enabled | default true }}
