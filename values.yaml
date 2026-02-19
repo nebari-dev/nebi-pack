@@ -1,0 +1,110 @@
+# Default values for nebari-nebi-pack
+# This is a YAML-formatted file.
+
+# =============================================================================
+# Nebari Integration
+# =============================================================================
+# Creates a NebariApp CRD that configures routing and auth via nebari-operator.
+# Set to false when deploying outside of Nebari.
+nebariapp:
+  enabled: true
+  # hostname: nebi.example.com  # Required when enabled
+  service:
+    name: ""  # Defaults to {{ fullname }}
+    port: 80
+  auth:
+    enabled: true
+    provider: keycloak
+    provisionClient: true
+    redirectURI: /  # Nebi SPA handles the redirect internally
+    scopes:
+      - openid
+      - profile
+      - email
+      - groups
+
+# =============================================================================
+# Nebi Application
+# =============================================================================
+image:
+  repository: quay.io/nebari/nebi
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+# Auth configuration (env vars on the Deployment)
+auth:
+  # Keycloak/OIDC groups that grant Nebi admin role
+  proxyAdminGroups: "admin,nebi-admin"
+  # Default role for proxy-authenticated users
+  proxyDefaultRole: "editor"
+
+# Server configuration
+server:
+  port: 8460
+  mode: production
+
+# Logging
+log:
+  format: json
+  level: info
+
+# Queue configuration (single pod = in-memory)
+queue:
+  type: memory
+
+# Storage for workspace environments
+persistence:
+  enabled: true
+  size: 20Gi
+  accessMode: ReadWriteOnce
+  storageClassName: ""  # Leave empty to use cluster default
+  mountPath: /app/data/environments
+
+# =============================================================================
+# Embedded PostgreSQL
+# =============================================================================
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16"
+    pullPolicy: IfNotPresent
+  storage:
+    size: 10Gi
+    storageClassName: ""  # Leave empty to use cluster default
+  resources: {}
+
+# =============================================================================
+# Service
+# =============================================================================
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8460
+
+# =============================================================================
+# Resources
+# =============================================================================
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 250m
+  #   memory: 256Mi
+
+# =============================================================================
+# Service Account
+# =============================================================================
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+# =============================================================================
+# Overrides
+# =============================================================================
+nameOverride: ""
+fullnameOverride: ""

@@ -1,0 +1,25 @@
+{{- if .Values.nebariapp.enabled }}
+apiVersion: reconcilers.nebari.dev/v1
+kind: NebariApp
+metadata:
+  name: {{ include "nebari-nebi-pack.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nebari-nebi-pack.labels" . | nindent 4 }}
+spec:
+  hostname: {{ required "nebariapp.hostname is required when nebariapp.enabled is true" .Values.nebariapp.hostname }}
+  service:
+    name: {{ .Values.nebariapp.service.name | default (include "nebari-nebi-pack.fullname" .) }}
+    port: {{ .Values.nebariapp.service.port | default 80 }}
+  {{- with .Values.nebariapp.auth }}
+  auth:
+    enabled: {{ .enabled | default true }}
+    provider: {{ .provider | default "keycloak" }}
+    provisionClient: {{ .provisionClient | default true }}
+    redirectURI: {{ .redirectURI | default "/" }}
+    {{- with .scopes }}
+    scopes:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}
+{{- end }}
