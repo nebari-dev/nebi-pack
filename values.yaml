@@ -31,9 +31,7 @@ nebariapp:
 # =============================================================================
 image:
   repository: quay.io/nebari/nebi
-  # TODO: Set this back after merge
-  # tag: sha-d0766e3
-  tag: sha-42138af
+  tag: sha-d0766e3
   pullPolicy: IfNotPresent
 
 replicaCount: 1
