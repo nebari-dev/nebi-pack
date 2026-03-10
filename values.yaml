@@ -36,6 +36,10 @@ image:
 
 replicaCount: 1
 
+# Deployment strategy – Recreate avoids Multi-Attach errors on RWO volumes
+strategy:
+  type: Recreate
+
 # Auth configuration (env vars on the Deployment)
 auth:
   # Keycloak/OIDC groups that grant Nebi admin role
