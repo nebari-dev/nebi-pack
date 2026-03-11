@@ -44,8 +44,12 @@ strategy:
 auth:
   # Keycloak/OIDC groups that grant Nebi admin role
   proxyAdminGroups: "admin,nebi-admin"
-  # Default role for proxy-authenticated users
-  proxyDefaultRole: "editor"
+  # Direct OIDC authentication (Nebi authenticates with Keycloak directly)
+  oidc:
+    enabled: false
+    issuerURL: ""
+    clientID: ""
+    clientSecretName: ""
 
 # Server configuration
 server:
