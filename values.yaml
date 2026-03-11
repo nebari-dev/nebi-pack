@@ -19,7 +19,11 @@ nebariapp:
     enabled: true
     provider: keycloak
     provisionClient: true
-    redirectURI: /  # Nebi SPA handles the redirect internally
+    # redirectURI must match the Envoy Gateway SecurityPolicy callback path.
+    # Nebi itself does NOT run an SSO proxy – auth is handled at the gateway
+    # (enforceAtGateway: true, the operator default), so oauth2-proxy's
+    # /oauth2/callback endpoint is what the IdP redirects back to.
+    redirectURI: /oauth2/callback
     scopes:
       - openid
       - profile
@@ -37,7 +41,7 @@ nebariapp:
     # externalUrl: ""  # Override the URL shown on the card (defaults to hostname)
     healthCheck:
       enabled: false
-      path: /health
+      path: /api/v1/health
       intervalSeconds: 30
       timeoutSeconds: 5
 
