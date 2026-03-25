@@ -29,6 +29,8 @@ nebariapp:
       - profile
       - email
       - groups
+    # tokenExchange:
+    #   enabled: true  # Allow other NebariApp clients to exchange tokens for this client
   # landingPage controls whether and how this service appears on the Nebari landing page
   # portal (served by nebari-landing / nebari-webapi).
   landingPage:

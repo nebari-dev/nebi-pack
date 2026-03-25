@@ -25,6 +25,10 @@ spec:
     scopes:
       {{- toYaml . | nindent 6 }}
     {{- end }}
+    {{- with .tokenExchange }}
+    tokenExchange:
+      enabled: {{ .enabled | default false }}
+    {{- end }}
   {{- end }}
   {{- with .Values.nebariapp.landingPage }}
   landingPage:
