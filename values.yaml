@@ -52,7 +52,7 @@ nebariapp:
 # =============================================================================
 image:
   repository: quay.io/nebari/nebi
-  tag: sha-d0766e3
+  tag: sha-a2c937a
   pullPolicy: IfNotPresent
 
 replicaCount: 1
