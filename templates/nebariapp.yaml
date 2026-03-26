@@ -29,6 +29,10 @@ spec:
     tokenExchange:
       enabled: {{ .enabled | default false }}
     {{- end }}
+    {{- with .deviceFlowClient }}
+    deviceFlowClient:
+      enabled: {{ .enabled | default false }}
+    {{- end }}
   {{- end }}
   {{- with .Values.nebariapp.landingPage }}
   landingPage:
