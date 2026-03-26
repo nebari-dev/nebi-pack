@@ -48,6 +48,7 @@ spec:
             - name: NEBI_AUTH_PROXY_ADMIN_GROUPS
               value: {{ .Values.auth.proxyAdminGroups | quote }}
             {{- if .Values.auth.oidc.enabled }}
+            # Direct OIDC: app handles the OIDC flow itself
             - name: NEBI_AUTH_OIDC_ISSUER_URL
               value: {{ .Values.auth.oidc.issuerURL | quote }}
             - name: NEBI_AUTH_OIDC_CLIENT_ID
@@ -59,6 +60,27 @@ spec:
                   key: client-secret
             - name: NEBI_AUTH_OIDC_REDIRECT_URL
               value: {{ printf "https://%s/api/v1/auth/oidc/callback" .Values.nebariapp.hostname | quote }}
+            {{- else if and .Values.nebariapp.enabled .Values.nebariapp.auth.enabled }}
+            # Gateway auth: read OIDC config from operator-provisioned Secret.
+            # Enables IdToken verification for proxy cookies and device flow tokens.
+            - name: NEBI_AUTH_OIDC_ISSUER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebari-nebi-pack.fullname" . }}-oidc-client
+                  key: issuer-url
+                  optional: true
+            - name: NEBI_AUTH_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebari-nebi-pack.fullname" . }}-oidc-client
+                  key: client-id
+                  optional: true
+            - name: NEBI_AUTH_DEVICE_FLOW_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebari-nebi-pack.fullname" . }}-oidc-client
+                  key: device-client-id
+                  optional: true
             {{- end }}
             # Database
             - name: NEBI_DATABASE_DRIVER
