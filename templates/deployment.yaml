@@ -75,6 +75,10 @@ spec:
                   name: {{ include "nebari-nebi-pack.fullname" . }}-oidc-client
                   key: client-id
                   optional: true
+            {{- end }}
+            {{- if and .Values.nebariapp.enabled .Values.nebariapp.auth .Values.nebariapp.auth.deviceFlowClient .Values.nebariapp.auth.deviceFlowClient.enabled }}
+            # Device flow client ID for RFC 8628 CLI login.
+            # Read from operator-provisioned OIDC Secret regardless of auth mode.
             - name: NEBI_AUTH_DEVICE_FLOW_CLIENT_ID
               valueFrom:
                 secretKeyRef:
