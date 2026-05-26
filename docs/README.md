@@ -9,12 +9,6 @@ This directory contains the [Docusaurus 3.5.2](https://docusaurus.io/) site for 
 
 The site has been built and tested against Node 22 and Yarn 1.22.22.
 
-If using the project `shell.nix`, both are available via:
-
-```bash
-nix-shell --run "node --version && yarn --version"
-```
-
 ## Install
 
 ```bash
