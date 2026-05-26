@@ -4,3 +4,4 @@ charts/
 .tilt/
 tilt_modules/
 .DS_Store
+docs/node_modules/
