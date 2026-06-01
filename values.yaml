@@ -82,6 +82,14 @@ log:
   format: json
   level: info
 
+# Runtime theming/branding configuration
+theme:
+  title: ""
+  logoUrl: ""
+  faviconUrl: ""
+  light: {}
+  dark: {}
+
 # Queue configuration (single pod = in-memory)
 queue:
   type: memory
