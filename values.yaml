@@ -82,13 +82,15 @@ log:
   format: json
   level: info
 
-# Runtime theming/branding configuration
-theme:
+# Branding settings - rendered into /config.json at deploy time.
+# Leave empty to use the built-in Nebi defaults.
+branding:
   title: ""
   logoUrl: ""
   faviconUrl: ""
-  light: {}
-  dark: {}
+  theme:
+    light: {}
+    dark: {}
 
 # Queue configuration (single pod = in-memory)
 queue:

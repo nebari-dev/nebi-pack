@@ -80,14 +80,14 @@ spec:
               value: {{ .Values.log.format | quote }}
             - name: NEBI_LOG_LEVEL
               value: {{ .Values.log.level | quote }}
-            # Runtime branding/theming configuration path
-            - name: NEBI_THEME_CONFIG_PATH
+            # Runtime branding configuration path
+            - name: NEBI_BRANDING_CONFIG_PATH
               value: "/app/public/config.json"
             # Storage
             - name: NEBI_STORAGE_WORKSPACES_DIR
               value: {{ .Values.persistence.mountPath | quote }}
           volumeMounts:
-            - name: theme-config
+            - name: branding-config
               mountPath: /app/public
               readOnly: true
             {{- if .Values.persistence.enabled }}
@@ -113,9 +113,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: theme-config
+        - name: branding-config
           configMap:
-            name: {{ include "nebari-nebi-pack.fullname" . }}-theme-config
+            name: {{ include "nebari-nebi-pack.fullname" . }}-branding-config
         {{- if .Values.persistence.enabled }}
         - name: environments
           persistentVolumeClaim:
