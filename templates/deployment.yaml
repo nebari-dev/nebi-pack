@@ -50,6 +50,10 @@ spec:
             {{- if .Values.auth.oidc.enabled }}
             - name: NEBI_AUTH_OIDC_ISSUER_URL
               value: {{ .Values.auth.oidc.issuerURL | quote }}
+            {{- with .Values.auth.oidc.discoveryURL }}
+            - name: NEBI_AUTH_OIDC_DISCOVERY_URL
+              value: {{ . | quote }}
+            {{- end }}
             - name: NEBI_AUTH_OIDC_CLIENT_ID
               value: {{ .Values.auth.oidc.clientID | quote }}
             - name: NEBI_AUTH_OIDC_CLIENT_SECRET
