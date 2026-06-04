@@ -93,8 +93,19 @@ local dev loop. Prerequisites:
 ```bash
 make up      # creates the k3d cluster and starts Tilt
 # Tilt UI:  http://localhost:10350
+# Nebi UI:  http://localhost:8460  (Tilt auto-forwards this port)
 make down    # tear down cluster and Tilt
 ```
+
+:::note
+In the local dev loop, Tilt uses `nebi` as the Helm release name, so
+resources are named `nebi-nebari-nebi-pack` (not `nebi-pack-nebari-nebi-pack`).
+The `kubectl` commands in [Verifying the deployment](#verifying-the-deployment)
+use the `nebi-pack` release name from the Helm/ArgoCD paths — adjust
+accordingly if you are inspecting a Tilt-managed deployment.
+:::
+
+
 
 ## Nebari install (ArgoCD + GitOps)
 
