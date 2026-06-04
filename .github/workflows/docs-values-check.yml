@@ -1,0 +1,33 @@
+name: Check values.md is up to date
+
+on:
+  pull_request:
+    paths:
+      - 'values.yaml'
+      - 'docs/docs/deployment/values.md'
+      - 'docs/helm-docs.gotmpl'
+
+jobs:
+  check-values-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install helm-docs
+        run: |
+          wget -q -O helm-docs.tar.gz \
+            https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz
+          tar -xzf helm-docs.tar.gz helm-docs
+          sudo mv helm-docs /usr/local/bin/helm-docs
+
+      - name: Regenerate values.md
+        run: |
+          helm-docs \
+            --chart-search-root=. \
+            --template-files=docs/helm-docs.gotmpl \
+            --output-file=docs/docs/deployment/values.md
+
+      - name: Fail if values.md is out of sync
+        run: |
+          git diff --exit-code docs/docs/deployment/values.md || \
+            (echo "❌ values.md is out of sync. Run 'make generate-docs' and commit the result." && exit 1)
