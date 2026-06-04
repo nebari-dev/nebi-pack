@@ -72,6 +72,14 @@ spec:
             - name: NEBI_DATABASE_DSN
               value: {{ include "nebari-nebi-pack.postgresDSN" . | quote }}
             {{- end }}
+            {{- if .Values.adminUsername }}
+            - name: ADMIN_USERNAME
+              value: {{ .Values.adminUsername | quote }}
+            {{- end }}
+            {{- if .Values.adminPassword }}
+            - name: ADMIN_PASSWORD
+              value: {{ .Values.adminPassword | quote }}
+            {{- end }}
             # Queue
             - name: NEBI_QUEUE_TYPE
               value: {{ .Values.queue.type | quote }}
