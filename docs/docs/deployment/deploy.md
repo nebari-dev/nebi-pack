@@ -69,9 +69,10 @@ helm install nebi-pack . \
 `nebari-operator` must be installed and running before the chart is applied. The `NebariApp` CRD is registered by the operator.
 :::
 
-### GitOps / ArgoCD
+### Nebari install (GitOps / ArgoCD)
+The recommended production deployment. The chart creates a NebariApp resource that the nebari-operator picks up to provision routing, TLS, and Keycloak OIDC.
 
-Point an ArgoCD `Application` at the chart repository:
+save the following to apps/nebi-pack.yaml in your GitOps repo to use as a starting point for configuring nebari:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
