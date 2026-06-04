@@ -42,6 +42,21 @@ examples verbatim.
 | Persistent storage | Default StorageClass with RWO support; ~30 Gi total (20 Gi environments + 10 Gi PostgreSQL) |
 | ArgoCD | Required for the GitOps path only |
 
+### Local dev loop (Tilt + k3d)
+
+The repo ships a Tiltfile and `ctlptl-config.yaml` for an end-to-end
+local dev loop. Prerequisites:
+[Docker](https://docs.docker.com/get-docker/),
+[ctlptl](https://github.com/tilt-dev/ctlptl),
+[Tilt](https://docs.tilt.dev/install.html).
+
+```bash
+make up          # k3d cluster + Tilt
+# Tilt UI:      http://localhost:10350
+# JupyterHub:   http://localhost:8000
+make down        # tear down
+```
+
 ## On Nebari (primary path)
 
 This is the recommended path for Nebari clusters. The `NebariApp` CRD wires routing and Keycloak authentication automatically via `nebari-operator`.
