@@ -69,6 +69,12 @@ auth:
   oidc:
     enabled: false
     issuerURL: ""
+    # Optional: separate discovery URL for split-horizon deployments where the
+    # public issuerURL is not reachable from in-cluster pods. Nebi fetches
+    # .well-known/openid-configuration from this URL while still validating the
+    # token "iss" against issuerURL. Defaults to issuerURL when empty.
+    # Example: http://keycloak-http.keycloak.svc.cluster.local/realms/nebari
+    discoveryURL: ""
     clientID: ""
     clientSecretName: ""
 
