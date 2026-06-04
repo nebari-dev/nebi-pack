@@ -7,7 +7,18 @@ sidebar_position: 1
 # Deploy the pack
 
 This guide is for **operators** installing the pack on a Kubernetes
-cluster.
+cluster. End users connecting to an already-deployed cluster should read
+[Use the pack](../user-guide/use) instead.
+
+:::note[Defaults reflect chart v0.1.0-alpha.4]
+
+Image tags and other defaults cited below match
+[`Chart.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/Chart.yaml)
+and [`values.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/values.yaml)
+on `main`. Check the repo for the latest pinned versions before copying
+examples verbatim.
+
+:::
 
 The pack deploys:
 
@@ -21,108 +32,28 @@ The pack deploys:
 
 See [Architecture](./architecture.md) for a full resource breakdown and request flow diagram.
 
-:::note[Defaults reflect chart v0.1.0-alpha.4]
-
-Image tags, subchart versions, and other defaults cited below match
-[`Chart.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/Chart.yaml)
-and [`values.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/values.yaml)
-on `main`. Check the repo for the latest pinned versions before copying
-examples verbatim.
-
-:::
-
 ## Prerequisites
 
-| Requirement | Notes |
+| Requirement | Details |
 |---|---|
-| Kubernetes ≥ 1.27 | Any CNCF-conformant cluster |
+| Kubernetes ≥ 1.27 | Any CNCF-conformant cluster; [k3d](https://k3d.io/) works for local dev |
 | Helm ≥ 3.12 | |
 | `nebari-operator` | Required when `nebariapp.enabled: true` (Nebari clusters only) |
-| A dedicated namespace | Recommended: `nebi` |
-| Persistent storage | Default StorageClass with RWO support; ~30 Gi total (20 Gi environments + 10 Gi PostgreSQL) |
+| Persistent storage | Default StorageClass with RWO support; ~30 Gi total |
 | ArgoCD | Required for the GitOps path only |
 
-### Local dev loop (Tilt + k3d)
+## Standalone install (no Nebari)
 
-The repo ships a Tiltfile and `ctlptl-config.yaml` for an end-to-end
-local dev loop. Prerequisites:
-[Docker](https://docs.docker.com/get-docker/),
-[ctlptl](https://github.com/tilt-dev/ctlptl),
-[Tilt](https://docs.tilt.dev/install.html).
+Use this path for local dev or clusters without `nebari-operator`. Skips
+the NebariApp routing layer entirely. You are responsible for exposing
+the service and handling authentication.
 
-```bash
-make up          # k3d cluster + Tilt
-# Tilt UI:      http://localhost:10350
-# JupyterHub:   http://localhost:8000
-make down        # tear down
-```
-
-## On Nebari (primary path)
-
-This is the recommended path for Nebari clusters. The `NebariApp` CRD wires routing and Keycloak authentication automatically via `nebari-operator`.
-
-Clone the chart repository and install:
+### From source
 
 ```bash
 git clone https://github.com/nebari-dev/nebari-nebi-pack.git
 cd nebari-nebi-pack
 
-helm install nebi-pack . \
-  --namespace nebi \
-  --create-namespace \
-  --set nebariapp.hostname=nebi.your-cluster.example.com
-```
-
-**What happens on first install:**
-
-1. The PreSync Job runs before any other resources are applied. It creates a Kubernetes Secret containing a random JWT signing key and PostgreSQL password — only if the secret does not already exist.
-2. The PostgreSQL StatefulSet starts and waits to become healthy.
-3. The Nebi Deployment starts, connects to PostgreSQL, and begins serving on port 8460.
-4. `nebari-operator` reconciles the `NebariApp` CRD, provisions a Keycloak OIDC client, and configures Envoy Gateway to enforce authentication.
-
-:::note
-`nebari-operator` must be installed and running before the chart is applied. The `NebariApp` CRD is registered by the operator.
-:::
-
-### Nebari install (GitOps / ArgoCD)
-The recommended production deployment. The chart creates a NebariApp resource that the nebari-operator picks up to provision routing, TLS, and Keycloak OIDC.
-
-save the following to apps/nebi-pack.yaml in your GitOps repo to use as a starting point for configuring nebari:
-
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: nebi-pack
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nebari-dev/nebari-nebi-pack.git
-    path: .
-    targetRevision: main
-    helm:
-      values: |
-        nebariapp:
-          hostname: nebi.your-cluster.example.com
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nebi
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-```
-
-The chart includes an ArgoCD **PreSync hook Job** that handles secret creation idempotently. No manual secret bootstrapping is required. See [Architecture](./architecture.md#secret-bootstrap) for details.
-
-## Standalone (without Nebari operator)
-
-Set `nebariapp.enabled=false` to skip the `NebariApp` CRD. You are responsible for exposing the service and handling authentication.
-
-```bash
 helm install nebi-pack . \
   --namespace nebi \
   --create-namespace \
@@ -151,7 +82,95 @@ spec:
                   number: 80
 ```
 
-## Verify
+### Local dev loop (Tilt + k3d)
+
+The repo ships a Tiltfile and `ctlptl-config.yaml` for an end-to-end
+local dev loop. Prerequisites:
+[Docker](https://docs.docker.com/get-docker/),
+[ctlptl](https://github.com/tilt-dev/ctlptl),
+[Tilt](https://docs.tilt.dev/install.html).
+
+```bash
+make up      # creates the k3d cluster and starts Tilt
+# Tilt UI:  http://localhost:10350
+make down    # tear down cluster and Tilt
+```
+
+## Nebari install (ArgoCD + GitOps)
+
+The recommended production deployment. The chart creates a `NebariApp`
+resource that `nebari-operator` picks up to provision routing, TLS, and
+Keycloak OIDC.
+
+Save the following to `apps/nebi-pack.yaml` in your GitOps repo:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nebi-pack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nebari-dev/nebari-nebi-pack.git
+    path: .
+    targetRevision: main
+    helm:
+      releaseName: nebi-pack
+      values: |
+        nebariapp:
+          hostname: nebi.your-cluster.example.com
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nebi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        nebari.dev/managed: "true"
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+```
+
+:::warning[`nebari.dev/managed: "true"` is required]
+
+The `managedNamespaceMetadata` block applies the `nebari.dev/managed`
+label to the namespace. **Without this label the nebari-operator will
+silently ignore your NebariApp resource** — the hostname will return 404
+and `kubectl describe nebariapp` will show no progress on conditions.
+
+:::
+
+**What happens on first sync:**
+
+1. The PreSync Job runs before any other resources are applied. It creates a Kubernetes Secret containing a random JWT signing key and PostgreSQL password — only if the secret does not already exist.
+2. The PostgreSQL StatefulSet starts and waits to become healthy.
+3. The Nebi Deployment starts, connects to PostgreSQL, and begins serving on port 8460.
+4. `nebari-operator` reconciles the `NebariApp` CRD, provisions a Keycloak OIDC client, and configures Envoy Gateway to enforce authentication.
+
+The chart's PreSync hook handles secret creation idempotently — no manual
+bootstrapping required. See [Architecture](./architecture.md#secret-bootstrap) for details.
+
+## Configuration
+
+Configuring the chart beyond the defaults — auth groups, OIDC, storage
+size, resource limits, the landing page card — is covered in the
+[values.yaml reference](./values.md).
+
+## Verifying the deployment
 
 Check that all pods are running:
 
@@ -176,6 +195,15 @@ curl http://localhost:8460/api/v1/health
 
 Expected: `{"status":"ok"}` with HTTP 200.
 
+If `nebariapp.enabled`, check the NebariApp conditions:
+
+```bash
+kubectl get nebariapp -n nebi
+kubectl describe nebariapp -n nebi
+```
+
+You want `RoutingReady`, `TLSReady`, and `AuthReady` all `True`.
+
 ## Upgrade
 
 ```bash
@@ -185,7 +213,8 @@ helm upgrade nebi-pack . \
   --set image.tag=sha-<new-tag>
 ```
 
-The PreSync Job is idempotent — it skips secret creation if the secret already exists.
+The PreSync Job is idempotent — it skips secret creation if the secret
+already exists.
 
 ## Uninstall
 
@@ -194,9 +223,23 @@ helm uninstall nebi-pack --namespace nebi
 ```
 
 :::warning PVC retention
-`helm uninstall` does **not** delete PersistentVolumeClaims. Environment and database data is preserved. To permanently delete all data:
+`helm uninstall` does **not** delete PersistentVolumeClaims. Environment
+and database data is preserved. To permanently delete all data:
 
 ```bash
 kubectl delete pvc -n nebi -l app.kubernetes.io/instance=nebi-pack
 ```
 :::
+
+## Operator troubleshooting
+
+Recovery steps for common failures — pods not starting, NebariApp stuck
+on conditions, secret bootstrap errors — live on the
+[Troubleshoot](../user-guide/troubleshoot.md) page.
+
+## Next steps
+
+- **End users** → [Use the pack](../user-guide/use.md) — log in and manage environments.
+- **Full chart reference** → [values.yaml reference](./values.md) — every option with type, default, and description.
+- **How it fits together** → [Architecture](./architecture.md) — the Kubernetes resources the chart creates and how they interact.
+- **Upstream docs** → [Nebi](https://github.com/nebari-dev/nebi), [Pixi](https://pixi.sh).
