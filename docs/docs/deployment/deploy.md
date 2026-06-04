@@ -6,6 +6,42 @@ sidebar_position: 1
 
 # Deploy the pack
 
+This guide is for **operators** installing the pack on a Kubernetes
+cluster.
+
+The pack deploys:
+
+- **Nebi server** — a single-pod Deployment running `--mode=both` (API + background worker combined). Image: `quay.io/nebari/nebi`. Listens on port 8460.
+- **PostgreSQL 16** — an embedded StatefulSet for application state and workspace metadata. 10 Gi persistent storage.
+- **ClusterIP Service** — exposes the Nebi server on port 80 within the cluster.
+- **Environments PVC** — 20 Gi RWO volume mounted at `/app/data/environments` for pixi workspace files.
+- **Secret** — JWT signing key and PostgreSQL password, created once by a PreSync Job and never overwritten on upgrade.
+- **NebariApp** *(Nebari clusters only)* — configures Envoy Gateway routing and provisions a Keycloak OIDC client automatically.
+- **ServiceAccount** — bound to the Nebi Deployment.
+
+See [Architecture](./architecture.md) for a full resource breakdown and request flow diagram.
+
+:::note[Defaults reflect chart v0.1.0-alpha.4]
+
+Image tags, subchart versions, and other defaults cited below match
+[`Chart.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/Chart.yaml)
+and [`values.yaml`](https://github.com/nebari-dev/nebari-nebi-pack/blob/main/values.yaml)
+on `main`. Check the repo for the latest pinned versions before copying
+examples verbatim.
+
+:::
+
+## Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| Kubernetes ≥ 1.27 | Any CNCF-conformant cluster |
+| Helm ≥ 3.12 | |
+| `nebari-operator` | Required when `nebariapp.enabled: true` (Nebari clusters only) |
+| A dedicated namespace | Recommended: `nebi` |
+| Persistent storage | Default StorageClass with RWO support; ~30 Gi total (20 Gi environments + 10 Gi PostgreSQL) |
+| ArgoCD | Required for the GitOps path only |
+
 ## On Nebari (primary path)
 
 This is the recommended path for Nebari clusters. The `NebariApp` CRD wires routing and Keycloak authentication automatically via `nebari-operator`.
