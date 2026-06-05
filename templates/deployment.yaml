@@ -39,7 +39,7 @@ spec:
               value: {{ .Values.server.mode | quote }}
             # Auth
             - name: NEBI_AUTH_TYPE
-              value: "basic"
+              value: {{ if .Values.auth.oidc.enabled }}"oidc"{{ else }}"basic"{{ end }}
             - name: NEBI_AUTH_JWT_SECRET
               valueFrom:
                 secretKeyRef:
