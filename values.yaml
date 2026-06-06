@@ -45,7 +45,7 @@ nebariapp:
   # landingPage controls whether and how this service appears on the Nebari landing page
   # portal (served by nebari-landing / nebari-webapi).
   landingPage:
-    enabled: false
+    enabled: true
     displayName: "Nebi"
     description: "Manage and share Conda/Pip environments for your Nebari cluster"
     icon: "https://raw.githubusercontent.com/nebari-dev/nebi/main/docs/static/img/nebi-icon.png"
@@ -53,7 +53,7 @@ nebariapp:
     priority: 10
     # externalUrl: ""  # Override the URL shown on the card (defaults to hostname)
     healthCheck:
-      enabled: false
+      enabled: true
       path: /api/v1/health
       intervalSeconds: 30
       timeoutSeconds: 5
