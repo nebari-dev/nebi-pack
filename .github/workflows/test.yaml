@@ -23,12 +23,20 @@ jobs:
       - name: Surface KUBECONFIG
         run: echo "KUBECONFIG=${{ steps.sandbox.outputs.kubeconfig }}" >> "$GITHUB_ENV"
 
+      # Stage the chart without .git — add-software-pack commits the copied dir
+      # into the gitops repo, and a nested .git would be recorded as an empty
+      # submodule (gitlink) instead of the chart files.
+      - name: Stage chart
+        run: |
+          mkdir -p /tmp/chart
+          rsync -a --exclude='.git' ./ /tmp/chart/
+
       # Deploy this chart via GitOps and wait for the ArgoCD Application to go Healthy.
       - uses: nebari-dev/action-nebari-sandbox/add-software-pack@222fcf36fd9a7a6c291f966055a84ad8bb38cfeb # v1
         with:
           gitops-dir: ${{ steps.sandbox.outputs.gitops-dir }}
           app-name: nebi-pack
-          chart-source: .
+          chart-source: /tmp/chart
           application-manifest: ./.github/ci/nebi-pack-application.yaml
 
       - name: Verify deployment and operator-wired OIDC
