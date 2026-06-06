@@ -47,7 +47,7 @@ spec:
                   key: jwt-secret
             - name: NEBI_AUTH_PROXY_ADMIN_GROUPS
               value: {{ .Values.auth.proxyAdminGroups | quote }}
-            {{- if .Values.auth.oidc.enabled }}
+            {{- if and .Values.auth.oidc.enabled .Values.nebariapp.enabled }}
             - name: NEBI_AUTH_OIDC_ISSUER_URL
               value: {{ include "nebari-nebi-pack.oidcIssuerURL" . | quote }}
             {{- with .Values.auth.oidc.discoveryURL }}
