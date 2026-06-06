@@ -85,7 +85,7 @@ keycloak.<base domain of nebariapp.hostname> (the operator convention).
 {{- if .Values.keycloak.hostname -}}
 {{- .Values.keycloak.hostname -}}
 {{- else -}}
-{{- printf "keycloak.%s" (.Values.nebariapp.hostname | splitList "." | rest | join ".") -}}
+{{- printf "keycloak.%s" (.Values.nebariapp.hostname | default "" | splitList "." | rest | join ".") -}}
 {{- end -}}
 {{- end }}
 
