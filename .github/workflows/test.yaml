@@ -12,29 +12,58 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create k3d cluster
-        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+      # Full Nebari platform (NIC + ArgoCD + Keycloak + operator + gateway) so
+      # the chart is exercised the way it actually runs: the operator provisions
+      # the OIDC client and the gateway enforces auth.
+      - uses: nebari-dev/action-nebari-sandbox@222fcf36fd9a7a6c291f966055a84ad8bb38cfeb # v1
+        id: sandbox
         with:
-          cluster_name: nebi-test
+          profile: platform
 
-      - name: Set up Helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+      - name: Surface KUBECONFIG
+        run: echo "KUBECONFIG=${{ steps.sandbox.outputs.kubeconfig }}" >> "$GITHUB_ENV"
 
-      - name: Install chart
+      # Stage the chart without .git — add-software-pack commits the copied dir
+      # into the gitops repo, and a nested .git would be recorded as an empty
+      # submodule (gitlink) instead of the chart files.
+      - name: Stage chart
         run: |
-          helm install nebi . \
-            --set nebariapp.enabled=false \
-            --set persistence.storageClassName=standard \
-            --set postgres.storage.storageClassName=standard \
-            --wait \
-            --timeout 5m
+          mkdir -p /tmp/chart
+          rsync -a --exclude='.git' ./ /tmp/chart/
 
-      - name: Wait for pods
-        run: |
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=nebi --timeout=300s
+      # Deploy this chart via GitOps and wait for the ArgoCD Application to go Healthy.
+      - uses: nebari-dev/action-nebari-sandbox/add-software-pack@222fcf36fd9a7a6c291f966055a84ad8bb38cfeb # v1
+        with:
+          gitops-dir: ${{ steps.sandbox.outputs.gitops-dir }}
+          app-name: nebi-pack
+          chart-source: /tmp/chart
+          application-manifest: ./.github/ci/nebi-pack-application.yaml
 
-      - name: Health check
+      - name: Verify deployment and operator-wired OIDC
         run: |
-          kubectl port-forward svc/nebi-nebari-nebi-pack 8460:80 &
-          sleep 5
-          curl -sf http://localhost:8460/api/v1/health
+          kubectl rollout status deployment -n nebi \
+            -l app.kubernetes.io/name=nebari-nebi-pack --timeout=180s
+
+          # nebi keeps basic auth and gets the OIDC verifier wired in via the
+          # operator-provisioned client (issuer derived from the hostname).
+          env=$(kubectl get deploy -n nebi -l app.kubernetes.io/name=nebari-nebi-pack \
+            -o jsonpath='{.items[0].spec.template.spec.containers[0].env[*].name}')
+          echo "$env" | grep -q NEBI_AUTH_OIDC_ISSUER_URL \
+            || { echo "OIDC env not wired"; exit 1; }
+
+      - name: Verify the gateway redirects nebi to Keycloak
+        env:
+          GATEWAY_IP: ${{ steps.sandbox.outputs.gateway-ip }}
+        run: |
+          loc=$(curl -sk -o /dev/null -w '%{redirect_url}' \
+            --resolve "nebi.nebari.local:443:${GATEWAY_IP}" \
+            https://nebi.nebari.local/)
+          echo "redirect: $loc"
+          echo "$loc" | grep -q 'keycloak.nebari.local/realms/nebari/protocol/openid-connect/auth' \
+            || { echo "nebi did not redirect to Keycloak"; exit 1; }
+
+      - name: Cleanup
+        if: always()
+        run: |
+          k3d cluster delete ${{ steps.sandbox.outputs.cluster-name }} || true
+          docker network rm ${{ steps.sandbox.outputs.network-name }} 2>/dev/null || true

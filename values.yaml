@@ -15,6 +15,14 @@ nebariapp:
   routing:
     routes:
       - pathPrefix: /
+    # /api and /docs bypass the gateway OIDC filter so bearer-token API calls
+    # (e.g. the jhub-apps environment selector) reach nebi directly; nebi
+    # validates the token itself.
+    publicRoutes:
+      - pathPrefix: /api/
+        pathType: PathPrefix
+      - pathPrefix: /docs/
+        pathType: PathPrefix
   auth:
     enabled: true
     provider: keycloak
@@ -68,9 +76,16 @@ strategy:
 auth:
   # Keycloak/OIDC groups that grant Nebi admin role
   proxyAdminGroups: "admin,nebi-admin"
-  # Direct OIDC authentication (Nebi authenticates with Keycloak directly)
+  # OIDC integration. Enabled by default so a stock Nebari install authenticates
+  # against Keycloak with no extra values: issuerURL, clientID and
+  # clientSecretName are all derived to match the client the nebari-operator
+  # provisions for this NebariApp. Override any field to opt out of the
+  # convention. nebi still runs NEBI_AUTH_TYPE=basic and validates the
+  # gateway-forwarded OIDC token via the verifier wired in here.
   oidc:
-    enabled: false
+    enabled: true
+    # Derived from keycloak.hostname (which defaults to keycloak.<base domain of
+    # nebariapp.hostname>) as https://<keycloak.hostname>/realms/nebari.
     issuerURL: ""
     # Optional: separate discovery URL for split-horizon deployments where the
     # public issuerURL is not reachable from in-cluster pods. Nebi fetches
@@ -78,8 +93,17 @@ auth:
     # token "iss" against issuerURL. Defaults to issuerURL when empty.
     # Example: http://keycloak-http.keycloak.svc.cluster.local/realms/nebari
     discoveryURL: ""
+    # Derived to match the operator-provisioned client when empty:
+    #   clientID         = <release namespace>-<fullname>
+    #   clientSecretName = <fullname>-oidc-client
     clientID: ""
     clientSecretName: ""
+
+# Keycloak hostname, used only to derive the OIDC issuer URL when
+# auth.oidc.issuerURL is not set. Defaults to keycloak.<base domain of
+# nebariapp.hostname> (the nebari-operator convention).
+keycloak:
+  hostname: ""
 
 # Server configuration
 server:
