@@ -10,7 +10,7 @@ const sidebars = {
       link: { type: 'doc', id: 'deployment/index' },
       items: [
         'deployment/deploy',
-        'deployment/architecture',
+        'deployment/with-data-science-pack',
         'deployment/values',
         'deployment/troubleshoot',
       ],
