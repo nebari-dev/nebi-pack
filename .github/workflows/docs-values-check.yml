@@ -24,7 +24,7 @@ jobs:
         run: |
           helm-docs \
             --chart-search-root=. \
-            --template-files=docs/helm-docs.gotmpl \
+            --template-files=docs/values.md.gotmpl \
             --output-file=docs/docs/deployment/values.md
 
       - name: Fail if values.md is out of sync
