@@ -30,8 +30,6 @@ The pack deploys:
 - **NebariApp** *(Nebari clusters only)* — configures Envoy Gateway routing and provisions a Keycloak OIDC client automatically.
 - **ServiceAccount** — bound to the Nebi Deployment.
 
-See [Architecture](./architecture.md) for a full resource breakdown and request flow diagram.
-
 ## Prerequisites
 
 | Requirement | Details |
@@ -173,7 +171,7 @@ and `kubectl describe nebariapp` will show no progress on conditions.
 4. `nebari-operator` reconciles the `NebariApp` CRD, provisions a Keycloak OIDC client, and configures Envoy Gateway to enforce authentication.
 
 The chart's PreSync hook handles secret creation idempotently — no manual
-bootstrapping required. See [Architecture](./architecture.md#secret-bootstrap) for details.
+bootstrapping required.
 
 ## Configuration
 
@@ -252,5 +250,4 @@ on conditions, secret bootstrap errors — live on the
 
 - **End users** → [Use the pack](../user-guide/use.md) — log in and manage environments.
 - **Full chart reference** → [values.yaml reference](./values.md) — every option with type, default, and description.
-- **How it fits together** → [Architecture](./architecture.md) — the Kubernetes resources the chart creates and how they interact.
 - **Upstream docs** → [Nebi](https://github.com/nebari-dev/nebi), [Pixi](https://pixi.sh).

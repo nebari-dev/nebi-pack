@@ -407,6 +407,5 @@ kubectl logs -n data-science -l component=hub --tail=100 | grep -i "nebi\|token-
 ## Next steps
 
 - **Full nebi-pack chart reference** → [values.yaml reference](./values.md)
-- **How the nebi-pack fits together** → [Architecture](./architecture.md)
-- **Troubleshooting** → [Troubleshoot](./troubleshoot.md)
+- **Troubleshooting** → [Troubleshoot](../user-guide/troubleshoot.md)
 - **nebari-data-science-pack upstream docs** → [GitHub](https://github.com/nebari-dev/nebari-data-science-pack)
