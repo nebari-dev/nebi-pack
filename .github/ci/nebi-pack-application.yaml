@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nebi-pack
+  namespace: argocd
+spec:
+  project: foundational
+  source:
+    # The sandbox bind-mounts the bootstrapped gitops repo; add-software-pack
+    # copies this chart to <gitops>/nebi-pack and envsubst-renders ${GITOPS_DIR}.
+    repoURL: "file://${GITOPS_DIR}"
+    targetRevision: HEAD
+    path: nebi-pack
+    helm:
+      releaseName: nebi-pack
+      # Only the hostname — the chart derives the full Keycloak OIDC config from
+      # it. This is exactly what a real minimal deployment provides.
+      values: |
+        nebariapp:
+          hostname: nebi.nebari.local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nebi
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        nebari.dev/managed: "true"
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

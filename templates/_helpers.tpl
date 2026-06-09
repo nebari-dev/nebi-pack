@@ -76,3 +76,51 @@ PostgreSQL DSN
 {{- $host := printf "%s-postgres" (include "nebari-nebi-pack.fullname" .) }}
 {{- printf "host=%s port=5432 user=nebi password=$(POSTGRES_PASSWORD) dbname=nebi sslmode=disable" $host }}
 {{- end }}
+
+{{/*
+Keycloak hostname used to derive the OIDC issuer. Falls back to
+keycloak.<base domain of nebariapp.hostname> (the operator convention).
+*/}}
+{{- define "nebari-nebi-pack.keycloakHostname" -}}
+{{- if .Values.keycloak.hostname -}}
+{{- .Values.keycloak.hostname -}}
+{{- else -}}
+{{- printf "keycloak.%s" (.Values.nebariapp.hostname | default "" | splitList "." | rest | join ".") -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+OIDC issuer URL. Uses auth.oidc.issuerURL when set, otherwise derives it from
+the Keycloak hostname against the "nebari" realm.
+*/}}
+{{- define "nebari-nebi-pack.oidcIssuerURL" -}}
+{{- if .Values.auth.oidc.issuerURL -}}
+{{- .Values.auth.oidc.issuerURL -}}
+{{- else -}}
+{{- printf "https://%s/realms/nebari" (include "nebari-nebi-pack.keycloakHostname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+OIDC client ID. Uses auth.oidc.clientID when set, otherwise derives the
+operator-provisioned client ID: <release namespace>-<fullname>.
+*/}}
+{{- define "nebari-nebi-pack.oidcClientID" -}}
+{{- if .Values.auth.oidc.clientID -}}
+{{- .Values.auth.oidc.clientID -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Namespace (include "nebari-nebi-pack.fullname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+OIDC client secret name. Uses auth.oidc.clientSecretName when set, otherwise
+derives the operator-provisioned secret: <fullname>-oidc-client.
+*/}}
+{{- define "nebari-nebi-pack.oidcClientSecretName" -}}
+{{- if .Values.auth.oidc.clientSecretName -}}
+{{- .Values.auth.oidc.clientSecretName -}}
+{{- else -}}
+{{- printf "%s-oidc-client" (include "nebari-nebi-pack.fullname" .) -}}
+{{- end -}}
+{{- end }}

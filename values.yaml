@@ -4,8 +4,8 @@
 # Nebari Integration
 # =============================================================================
 
-# -- Create a NebariApp CRD to configure routing and Keycloak auth via
-# nebari-operator. Set to `false` when deploying outside of Nebari.
+# -- Creates a NebariApp CRD that configures routing and auth via nebari-operator.
+# Set to `false` when deploying outside of Nebari.
 nebariapp:
   # -- Create the NebariApp resource.
   enabled: true
@@ -22,6 +22,14 @@ nebariapp:
   routing:
     routes:
       - pathPrefix: /
+    # /api and /docs bypass the gateway OIDC filter so bearer-token API calls
+    # (e.g. the jhub-apps environment selector) reach nebi directly; nebi
+    # validates the token itself.
+    publicRoutes:
+      - pathPrefix: /api/
+        pathType: PathPrefix
+      - pathPrefix: /docs/
+        pathType: PathPrefix
   auth:
     # -- Enforce Keycloak authentication at the Envoy Gateway for this app.
     enabled: true
@@ -29,7 +37,10 @@ nebariapp:
     provider: keycloak
     # -- Automatically provision a Keycloak OIDC client for this NebariApp.
     provisionClient: true
-    # -- OAuth2 callback path. Must match the Envoy Gateway SecurityPolicy callback path.
+    # -- redirectURI must match the Envoy Gateway SecurityPolicy callback path.
+    # Nebi itself does NOT run an SSO proxy – auth is handled at the gateway
+    # (enforceAtGateway: true, the operator default), so oauth2-proxy's
+    # /oauth2/callback endpoint is what the IdP redirects back to.
     redirectURI: /oauth2/callback
     # -- OIDC scopes to request.
     scopes:
@@ -37,12 +48,16 @@ nebariapp:
       - profile
       - email
       - groups
-    # tokenExchange:
-    #   enabled: true  # Allow other NebariApp clients to exchange tokens for this client
-  # -- Controls whether and how this service appears on the Nebari landing page portal.
+    tokenExchange:
+      # Allow other NebariApp clients (e.g. JupyterHub) to exchange a user
+      # token for a Nebi-audience token in Keycloak. Required by the jhub-apps
+      # environment selector and Nebi auto-auth.
+      enabled: true
+  # -- landingPage controls whether and how this service appears on the Nebari landing page
+  # portal (served by nebari-landing / nebari-webapi).
   landingPage:
     # -- Show this service on the Nebari landing page portal.
-    enabled: false
+    enabled: true
     # -- Display name shown on the landing page card.
     displayName: "Nebi"
     # -- Short description shown on the landing page card.
@@ -56,7 +71,7 @@ nebariapp:
     # externalUrl: ""  # Override the URL shown on the card (defaults to hostname)
     healthCheck:
       # -- Enable health-check polling for the landing page card status indicator.
-      enabled: false
+      enabled: true
       # -- HTTP path polled for the health check.
       path: /api/v1/health
       # -- Seconds between health-check polls.
@@ -73,7 +88,7 @@ image:
   # -- Image repository.
   repository: quay.io/nebari/nebi
   # -- Image tag. Pin to a specific `sha-<hash>` tag for reproducible deployments.
-  tag: sha-9408c34
+  tag: sha-f4b23ca
   # -- Image pull policy.
   pullPolicy: IfNotPresent
 
@@ -81,49 +96,68 @@ image:
 # because `--mode=both` runs API and worker in the same pod.
 replicaCount: 1
 
-# -- Deployment update strategy. `Recreate` is required to avoid Multi-Attach errors
-# when the environments PVC uses `ReadWriteOnce`.
+# -- Deployment strategy – Recreate avoids Multi-Attach errors on RWO volumes
 strategy:
   type: Recreate
 
-# -- Authentication configuration passed to the Nebi server as environment variables.
+# -- Auth configuration (env vars on the Deployment)
 auth:
-  # -- Comma-separated list of Keycloak/OIDC group names whose members are granted the Nebi admin role.
+  # -- Keycloak/OIDC groups that grant Nebi admin role
   proxyAdminGroups: "admin,nebi-admin"
-  # -- Direct OIDC configuration. Enables Nebi to authenticate users against an OIDC
-  # provider independently of the NebariApp gateway auth. Not required when
-  # `nebariapp.auth.enabled` is `true` (gateway auth handles login).
+  # -- OIDC integration. Enabled by default so a stock Nebari install authenticates
+  # against Keycloak with no extra values: issuerURL, clientID and
+  # clientSecretName are all derived to match the client the nebari-operator
+  # provisions for this NebariApp. Override any field to opt out of the
+  # convention. nebi still runs NEBI_AUTH_TYPE=basic and validates the
+  # gateway-forwarded OIDC token via the verifier wired in here.
   oidc:
     # -- Enable direct OIDC authentication.
-    enabled: false
+    enabled: true
+    # Derived from keycloak.hostname (which defaults to keycloak.<base domain of
+    # nebariapp.hostname>) as https://<keycloak.hostname>/realms/nebari.
     # -- OIDC issuer URL (e.g. `https://keycloak.example.com/realms/nebari`).
     issuerURL: ""
+    # Optional: separate discovery URL for split-horizon deployments where the
+    # public issuerURL is not reachable from in-cluster pods. Nebi fetches
+    # .well-known/openid-configuration from this URL while still validating the
+    # token "iss" against issuerURL. Defaults to issuerURL when empty.
+    # Example: http://keycloak-http.keycloak.svc.cluster.local/realms/nebari
+    discoveryURL: ""
+    # Derived to match the operator-provisioned client when empty:
+    #   clientID         = <release namespace>-<fullname>
+    #   clientSecretName = <fullname>-oidc-client
     # -- OIDC client ID.
     clientID: ""
     # -- Name of the Kubernetes Secret containing the OIDC client secret under key `client-secret`.
     clientSecretName: ""
 
-# -- HTTP server configuration.
+# Keycloak hostname, used only to derive the OIDC issuer URL when
+# auth.oidc.issuerURL is not set. Defaults to keycloak.<base domain of
+# nebariapp.hostname> (the nebari-operator convention).
+keycloak:
+  hostname: ""
+
+# -- Server configuration
 server:
   # -- Port the Nebi container listens on.
   port: 8460
   # -- Nebi server run mode.
   mode: production
 
-# -- Logging configuration.
+# -- Logging
 log:
   # -- Log output format. `json` for structured logs; `text` for human-readable.
   format: json
   # -- Log verbosity level. One of `debug`, `info`, `warn`, `error`.
   level: info
 
-# -- Background job queue configuration.
+# -- Queue configuration (single pod = in-memory)
 queue:
   # -- Queue backend. `memory` is suitable for single-replica deployments (jobs are
   # lost on pod restart). Use `valkey` with the upstream chart for multi-replica setups.
   type: memory
 
-# -- Persistent storage for pixi workspace environment files.
+# -- Storage for workspace environments
 persistence:
   # -- Enable the environments PersistentVolumeClaim.
   enabled: true
