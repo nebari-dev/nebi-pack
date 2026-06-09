@@ -42,6 +42,16 @@ yarn run serve
 
 Serves the contents of `docs/build/` locally so you can verify the production output, including search.
 
+## Regenerating values.md
+
+`docs/docs/deployment/values.md` is auto-generated from `values.yaml` using [helm-docs](https://github.com/norwoodj/helm-docs) and the template at `docs/values.md.gotmpl`. To update it after editing `values.yaml`:
+
+```bash
+make generate-docs
+```
+
+Commit the resulting change to `docs/docs/deployment/values.md` alongside your `values.yaml` change. The CI workflow `docs-values-check.yml` will fail on PRs where the two are out of sync.
+
 ## Troubleshooting
 
 ### `ValidationError: Invalid options object. Progress Plugin has been initialized using an options object that does not match the API schema`
