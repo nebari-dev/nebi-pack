@@ -12,7 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "generate": "helm-docs --chart-search-root=.. --template-files=docs/helm-docs.gotmpl --output-file=docs/docs/deployment/values.md"
+    "generate": "helm-docs --chart-search-root=.. --template-files=docs/values.md.gotmpl --output-file=docs/docs/deployment/values.md"
   },
   "dependencies": {
     "@docusaurus/core": "3.5.2",
