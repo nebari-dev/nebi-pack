@@ -12,6 +12,7 @@ const sidebars = {
         'deployment/deploy',
         'deployment/architecture',
         'deployment/values',
+        'deployment/troubleshoot',
       ],
     },
     {
@@ -20,7 +21,6 @@ const sidebars = {
       link: { type: 'doc', id: 'user-guide/index' },
       items: [
         'user-guide/use',
-        'user-guide/troubleshoot',
       ],
     },
     {

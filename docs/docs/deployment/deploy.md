@@ -200,11 +200,11 @@ nebi-pack-nebari-nebi-pack-postgres-0         1/1     Running   0          2m
 Check the health endpoint:
 
 ```bash
-kubectl port-forward -n nebi svc/nebi-pack-nebari-nebi-pack 8460:80
-curl http://localhost:8460/api/v1/health
+kubectl run nebi-probe --rm -it --image=curlimages/curl --restart=Never -- \
+  curl -sf http://nebi-pack-nebari-nebi-pack.nebi.svc.cluster.local/api/v1/health
 ```
 
-Expected: `{"status":"ok"}` with HTTP 200.
+Expected: `{"status":"healthy"}` with HTTP 200.
 
 If `nebariapp.enabled`, check the NebariApp conditions:
 
@@ -246,7 +246,7 @@ kubectl delete pvc -n nebi -l app.kubernetes.io/instance=nebi-pack
 
 Recovery steps for common failures — pods not starting, NebariApp stuck
 on conditions, secret bootstrap errors — live on the
-[Troubleshoot](../user-guide/troubleshoot.md) page.
+[Troubleshoot](./troubleshoot.md) page.
 
 ## Next steps
 
