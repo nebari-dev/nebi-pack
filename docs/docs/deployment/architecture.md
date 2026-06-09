@@ -1,7 +1,7 @@
 ---
 title: Architecture
 description: The Kubernetes resources the Nebari Nebi Pack creates and how they interact.
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Architecture

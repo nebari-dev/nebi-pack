@@ -84,7 +84,7 @@ spec:
 
 ### Local dev loop (Tilt + k3d)
 
-The repo ships a Tiltfile and `ctlptl-config.yaml` for an end-to-end
+The [repo](https://github.com/nebari-dev/nebari-nebi-pack) ships a Tiltfile and `ctlptl-config.yaml` for an end-to-end
 local dev loop. Prerequisites:
 [Docker](https://docs.docker.com/get-docker/),
 [ctlptl](https://github.com/tilt-dev/ctlptl),
