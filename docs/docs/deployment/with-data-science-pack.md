@@ -404,16 +404,6 @@ If `nebi whoami` fails or returns an auth error, check hub logs for token-exchan
 kubectl logs -n data-science -l component=hub --tail=100 | grep -i "nebi\|token-exchange"
 ```
 
-**4. Check the RBAC bootstrap job:**
-
-```bash
-kubectl get job -n data-science -l app.kubernetes.io/component=keycloak-rbac-bootstrap
-kubectl logs -n data-science -l app.kubernetes.io/component=keycloak-rbac-bootstrap
-```
-
-The job configures Keycloak groups and roles needed for JupyterHub's RBAC model. It should complete
-with exit code 0.
-
 ## Next steps
 
 - **Full nebi-pack chart reference** → [values.yaml reference](./values.md)
