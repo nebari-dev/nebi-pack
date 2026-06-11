@@ -10,8 +10,8 @@ const config = {
   tagline: 'Environment management for Nebari',
   favicon: 'img/favicon.ico',
 
-  url: 'https://nebari-nebi-pack.netlify.app',
-  baseUrl: '/',
+  url: 'https://nebari-dev.github.io',
+  baseUrl: '/nebari-nebi-pack/',
 
   organizationName: 'nebari-dev',
   projectName: 'nebari-nebi-pack',
