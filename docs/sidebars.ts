@@ -1,13 +1,12 @@
-// @ts-check
+import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
-/** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
-const sidebars = {
+const sidebars: SidebarsConfig = {
   docsSidebar: [
     'introduction',
     {
       type: 'category',
       label: 'Deployment',
-      link: { type: 'doc', id: 'deployment/index' },
+      link: {type: 'doc', id: 'deployment/index'},
       items: [
         'deployment/deploy',
         'deployment/architecture',
@@ -17,7 +16,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'User Guide',
-      link: { type: 'doc', id: 'user-guide/index' },
+      link: {type: 'doc', id: 'user-guide/index'},
       items: [
         'user-guide/use',
         'user-guide/troubleshoot',
@@ -26,7 +25,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'Reference',
-      link: { type: 'doc', id: 'reference/index' },
+      link: {type: 'doc', id: 'reference/index'},
       items: [
         'reference/release-notes',
       ],
@@ -34,4 +33,4 @@ const sidebars = {
   ],
 };
 
-module.exports = sidebars;
+export default sidebars;
