@@ -85,14 +85,6 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
-          items: [
-            {label: 'Deployment', to: '/deployment/'},
-            {label: 'User Guide', to: '/user-guide/'},
-            {label: 'Reference', to: '/reference/'},
-          ],
-        },
-        {
           title: 'Source',
           items: [
             {
