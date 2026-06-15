@@ -1,14 +1,85 @@
 ---
 title: Introduction
-description: Documentation for the Nebari Nebi Pack, an environment management solution for Nebari.
+description: An overview of the Nebari Nebi Pack — deploy the Nebi environment management platform on Nebari.
 slug: /
 sidebar_position: 1
-last_update:
-  date: 2026-06-12
 ---
+
+import DocCardList from '@theme/DocCardList';
 
 # Nebari Nebi Pack
 
-:::note[Documentation in progress]
-This documentation site is being built out. Content is coming soon.
-:::
+## What is the Nebari Nebi Pack?
+
+The Nebari Nebi Pack is a Helm chart that deploys [Nebi](https://github.com/nebari-dev/nebi) on a Nebari or Kubernetes cluster. Nebi is a team environment management server built on top of [Pixi](https://pixi.sh) — it adds version control, team sharing, and access control for conda and PyPI environments, making it easy for data science teams to reproduce and share complex software stacks.
+
+Think of it as **git for environments**: workspaces can be snapshotted with semantic tags, diffed across versions, rolled back, and published to OCI registries — all from the command line or Nebi's web UI.
+
+## Why use this pack?
+
+Data science work depends on reproducible environments. `pip install` and `conda env create` get you started, but they don't answer "how do I give every teammate the exact same CUDA + GDAL + PyTorch stack I have?" Pixi solves the installation problem with a unified lockfile across conda-forge and PyPI. Nebi solves the collaboration problem on top of that:
+
+- **One command to get your teammate's environment.** `nebi pull geo-ml:v1.2` installs the exact locked environment, regardless of OS.
+- **No silent environment drift.** Environments are version-controlled. `nebi diff` shows exactly what changed between releases.
+- **Central governance.** Workspace access is controlled per-team with RBAC. Audit logs track who changed what.
+- **Native Nebari integration.** On Nebari, authentication is handled by Keycloak at the Envoy Gateway — no separate login for users.
+
+## Key features
+
+| Feature | Description |
+|---|---|
+| **Version control** | Push, pull, diff, and roll back workspace environments with semantic tags |
+| **Team sharing** | Central server stores workspace specs; teammates pull exact environments by name |
+| **OCI publishing** | Publish workspace bundles to any OCI registry (GHCR, Quay.io, Docker Hub) |
+| **RBAC** | Per-workspace read / write / admin permissions with OIDC group sync |
+| **Web UI** | Browser-based interface for browsing workspaces, versions, and members |
+| **Nebari SSO** | On Nebari, Keycloak handles authentication at the gateway — no separate Nebi login |
+| **Embedded PostgreSQL** | Zero-dependency deploy; no external database required out of the box |
+
+## Who is this for?
+
+**Platform operators** deploying on Nebari who want to give their data science users a central place to manage and share Pixi environments. The pack handles the Kubernetes complexity — networking, auth, storage, secrets — so operators can focus on configuration.
+
+**Data science teams** who need reproducible, shareable environments with system-level dependencies (CUDA, GDAL, MPI) that pip alone cannot install. If your team has ever said "it works on my machine," Nebi is worth a look.
+
+## What this pack is not
+
+- **Not a package manager.** Nebi orchestrates [Pixi](https://pixi.sh) workspaces — it does not resolve packages itself. Pixi (via conda-forge and PyPI) handles the actual installation.
+- **Not a replacement for Nebari profiles.** Nebari JupyterHub profiles control the compute resources and base image for each session. Nebi manages the software environments within those sessions.
+- **Not a multi-replica production deployment.** The pack runs Nebi in `--mode=both` (API + worker in one pod) with an in-memory queue and RWO storage. It is sized for typical Nebari cluster workloads. For higher availability, use the [upstream Nebi chart](https://github.com/nebari-dev/nebi) directly.
+- **Not a managed service.** You own and operate the deployment.
+
+## At a glance
+
+| Property | Value |
+|---|---|
+| **Chart name** | `nebari-nebi-pack` |
+| **App version** | `latest` (pin via `image.tag`) |
+| **Recommended namespace** | `nebi` |
+| **Nebi image** | `quay.io/nebari/nebi` |
+| **Database** | Embedded PostgreSQL 16 |
+| **Storage required** | ~30 Gi RWO (20 Gi environments + 10 Gi PostgreSQL) |
+| **Auth (on Nebari)** | Keycloak via NebariApp CRD — enforced at Envoy Gateway |
+| **Auth (standalone)** | Basic auth or direct OIDC (configurable) |
+| **Maturity** | Experimental |
+
+<DocCardList items={[
+  {
+    type: 'link',
+    href: '/deployment/',
+    label: 'Deployment',
+    description: 'Install and configure the Nebi Pack on a Kubernetes or Nebari cluster.',
+  },
+  {
+    type: 'link',
+    href: '/user-guide/',
+    label: 'User Guide',
+    description: 'Use the Nebi Pack once it is installed on your cluster.',
+  },
+  {
+    type: 'link',
+    href: '/reference/',
+    label: 'Reference',
+    description: 'Release notes and reference material.',
+  },
+]}/>
