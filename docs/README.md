@@ -41,34 +41,3 @@ yarn run serve
 ```
 
 Serves the contents of `docs/build/` locally so you can verify the production output, including search.
-
-## Regenerating values.md
-
-`docs/docs/deployment/values.md` is auto-generated from `values.yaml` using [helm-docs](https://github.com/norwoodj/helm-docs) and the template at `docs/values.md.gotmpl`. To update it after editing `values.yaml`:
-
-```bash
-make generate-docs
-```
-
-Commit the resulting change to `docs/docs/deployment/values.md` alongside your `values.yaml` change. The CI workflow `docs-values-check.yml` will fail on PRs where the two are out of sync.
-
-## Troubleshooting
-
-### `ValidationError: Invalid options object. Progress Plugin has been initialized using an options object that does not match the API schema`
-
-This is a webpack-version mismatch. Docusaurus 3.5.2 targets webpack 5.94; webpack 5.97+ tightens the `ProgressPlugin` options schema and rejects what Docusaurus passes. `package.json` pins the resolution with:
-
-```json
-"resolutions": {
-  "webpack": "5.94.0"
-}
-```
-
-Yarn applies `resolutions` on install, but if `node_modules` was populated before the field existed (or by a different package manager) the wrong webpack stays cached. Reinstall cleanly:
-
-```bash
-cd docs
-rm -rf node_modules yarn.lock
-yarn install
-yarn build
-```
