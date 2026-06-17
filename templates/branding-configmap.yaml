@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nebari-nebi-pack.fullname" . }}-branding-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nebari-nebi-pack.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {
+      "branding": {
+        "title": {{ .Values.branding.title | quote }},
+        "logoUrl": {{ .Values.branding.logoUrl | quote }},
+        "faviconUrl": {{ .Values.branding.faviconUrl | quote }},
+        "theme": {
+          "light": {{ .Values.branding.theme.light | default dict | toJson }},
+          "dark": {{ .Values.branding.theme.dark | default dict | toJson }}
+        }
+      }
+    }

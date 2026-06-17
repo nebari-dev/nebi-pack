@@ -84,14 +84,20 @@ spec:
               value: {{ .Values.log.format | quote }}
             - name: NEBI_LOG_LEVEL
               value: {{ .Values.log.level | quote }}
+            # Runtime branding configuration path
+            - name: NEBI_BRANDING_CONFIG_PATH
+              value: "/app/public/config.json"
             # Storage
             - name: NEBI_STORAGE_WORKSPACES_DIR
               value: {{ .Values.persistence.mountPath | quote }}
-          {{- if .Values.persistence.enabled }}
           volumeMounts:
+            - name: branding-config
+              mountPath: /app/public
+              readOnly: true
+            {{- if .Values.persistence.enabled }}
             - name: environments
               mountPath: {{ .Values.persistence.mountPath }}
-          {{- end }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /api/v1/health
@@ -110,9 +116,12 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- if .Values.persistence.enabled }}
       volumes:
+        - name: branding-config
+          configMap:
+            name: {{ include "nebari-nebi-pack.fullname" . }}-branding-config
+        {{- if .Values.persistence.enabled }}
         - name: environments
           persistentVolumeClaim:
             claimName: {{ include "nebari-nebi-pack.fullname" . }}-environments
-      {{- end }}
+        {{- end }}
