@@ -1,0 +1,29 @@
+baseURL = "https://nebari-dev.github.io/nebari-nebi-pack/"
+title = "Nebari Nebi Pack"
+contentDir = "docs"
+enableGitInfo = true
+
+[languages]
+  [languages.en]
+    locale = "en-US"
+
+[module]
+  [module.hugoVersion]
+    extended = true
+    min = "0.158.0"
+  [[module.imports]]
+    path = "github.com/nebari-dev/nebari-hugo-theme"
+
+[params]
+  description = "Environment management for Nebari"
+  repo        = "https://github.com/nebari-dev/nebari-nebi-pack"
+  editBase    = "https://github.com/nebari-dev/nebari-nebi-pack/edit/main/docs/docs"
+  logo        = "/img/logo.svg"
+  logoDark    = "/img/logo.svg"
+
+  [[params.tabs]]
+    name = "Docs"
+    url  = "/"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
