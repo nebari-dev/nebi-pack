@@ -13,26 +13,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # full history required for enableGitInfo (last-updated timestamps)
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-go@v5
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: docs/go.sum
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Hugo Extended
+        env:
+          HUGO_VERSION: 0.162.1
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb \
+            https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
+          sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: Fetch Hugo modules
+        run: hugo mod tidy
         working-directory: docs
 
       - name: Build website
-        run: npm run build
+        run: hugo --minify
         working-directory: docs
 
       - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/build
+          path: docs/public
 
   deploy:
     name: Deploy to GitHub Pages
