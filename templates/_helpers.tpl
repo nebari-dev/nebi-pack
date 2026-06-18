@@ -91,13 +91,27 @@ keycloak.<base domain of nebariapp.hostname> (the operator convention).
 
 {{/*
 OIDC issuer URL. Uses auth.oidc.issuerURL when set, otherwise derives it from
-the Keycloak hostname against the "nebari" realm.
+the Keycloak hostname and keycloak.realm.
 */}}
 {{- define "nebari-nebi-pack.oidcIssuerURL" -}}
 {{- if .Values.auth.oidc.issuerURL -}}
 {{- .Values.auth.oidc.issuerURL -}}
 {{- else -}}
-{{- printf "https://%s/realms/nebari" (include "nebari-nebi-pack.keycloakHostname" .) -}}
+{{- printf "https://%s/realms/%s" (include "nebari-nebi-pack.keycloakHostname" .) (.Values.keycloak.realm | default "nebari") -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+OIDC discovery URL for in-cluster pod-to-Keycloak communication (split-horizon).
+Uses auth.oidc.discoveryURL when set, otherwise derives the in-cluster URL from
+the codecentric/keycloakx Service naming convention:
+  http://<releaseName>-keycloakx-http.<namespace>.svc.cluster.local:8080/realms/<realm>
+*/}}
+{{- define "nebari-nebi-pack.oidcDiscoveryURL" -}}
+{{- if .Values.auth.oidc.discoveryURL -}}
+{{- .Values.auth.oidc.discoveryURL -}}
+{{- else -}}
+{{- printf "http://%s-keycloakx-http.%s.svc.cluster.local:8080/realms/%s" (.Values.keycloak.releaseName | default "keycloak") (.Values.keycloak.namespace | default "keycloak") (.Values.keycloak.realm | default "nebari") -}}
 {{- end -}}
 {{- end }}
 

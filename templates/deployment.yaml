@@ -50,7 +50,7 @@ spec:
             {{- if and .Values.auth.oidc.enabled .Values.nebariapp.enabled }}
             - name: NEBI_AUTH_OIDC_ISSUER_URL
               value: {{ include "nebari-nebi-pack.oidcIssuerURL" . | quote }}
-            {{- with .Values.auth.oidc.discoveryURL }}
+            {{- with include "nebari-nebi-pack.oidcDiscoveryURL" . }}
             - name: NEBI_AUTH_OIDC_DISCOVERY_URL
               value: {{ . | quote }}
             {{- end }}
