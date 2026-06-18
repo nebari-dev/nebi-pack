@@ -15,15 +15,21 @@ enableGitInfo = true
     path = "github.com/nebari-dev/nebari-hugo-theme"
 
 [params]
+  logo     = "logo/logo.svg"
+  logoDark = "logo/logo.svg"
   description = "Environment management for Nebari"
   repo        = "https://github.com/nebari-dev/nebari-nebi-pack"
   editBase    = "https://github.com/nebari-dev/nebari-nebi-pack/edit/main/docs/docs"
-  logo        = "/img/logo.svg"
-  logoDark    = "/img/logo.svg"
 
   [[params.tabs]]
     name = "Docs"
     url  = "/"
+
+  [[params.sidebar]]
+    heading = "Getting Started"
+    [[params.sidebar.items]]
+      label = "Introduction"
+      url   = "/"
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
