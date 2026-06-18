@@ -1,49 +1,35 @@
-# Nebari Nebi Pack Documentation
+# Nebari Nebi Pack — Docs
 
-This directory contains the [Docusaurus](https://docusaurus.io/) site for the Nebari Nebi Pack. The site is written in TypeScript.
+Static documentation site built with [Hugo](https://gohugo.io/) using the
+[nebari-hugo-theme](https://github.com/nebari-dev/nebari-hugo-theme) Hugo Module.
 
-## Prerequisites
+## Required tools
 
-- Node.js `>= 20` (enforced by the `engines` field in `package.json`).
-- npm (bundled with Node.js).
+| Tool | nixpkgs name | Minimum version | Purpose |
+|------|-------------|-----------------|---------|
+| Hugo Extended | `hugo` | 0.116.0 | Static site generator (Extended variant required) |
+| Go | `go` | 1.25.0 | Hugo module resolution |
 
-## Install
+Both tools must be available on `PATH`. Add them to your nix environment via `shell.nix` or your global nix profile.
 
-```bash
-cd docs
-npm install
-```
+> **Note:** The standard Hugo variant will not work — Hugo Extended is required for the theme's asset pipeline.
 
-## Local development
+## Commands
 
-```bash
-npm start
-```
+All commands must be run from the **repo root** via `nix-shell` (which provides Hugo).
 
-Starts the Docusaurus dev server with hot reload on http://localhost:3000/.
+| Command | Purpose |
+|---------|---------|
+| `nix-shell --run "cd docs && hugo mod tidy"` | Fetch or update the nebari-hugo-theme dependency |
+| `nix-shell --run "cd docs && hugo server"` | Start local dev server with live reload at http://localhost:1313 |
+| `nix-shell --run "cd docs && hugo --minify"` | Production build — output written to `docs/public/` |
+| `nix-shell --run "cd docs && hugo mod get -u && hugo mod tidy"` | Upgrade theme to latest version |
 
-## Production build
+## Adding content
 
-```bash
-npm run build
-```
+Content lives in `docs/docs/`. Add Markdown files there; Hugo derives the URL from the filename.
 
-Emits static files to `docs/build/`. The search index is generated as part of the production build.
+- `docs/docs/_index.md` → served at `/` (the homepage)
+- `docs/docs/install.md` → served at `/install/`
 
-## Preview the production build
-
-```bash
-npm run serve
-```
-
-Serves the contents of `docs/build/` locally so you can verify the production output, including search.
-
-## Type checking
-
-```bash
-npm run typecheck
-```
-
-## CI
-
-The [`Deploy docs to GitHub Pages` workflow](../.github/workflows/deploy-docs.yml) builds the site for every pull request and push to `main`.
+Update `[[params.sidebar]]` entries in `hugo.toml` to add new pages to the sidebar navigation.

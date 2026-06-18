@@ -10,3 +10,7 @@ docs/node_modules/
 docs/build/
 docs/.docusaurus/
 docs/.cache-loader/
+
+# Docs (Hugo)
+docs/public/
+docs/.hugo_build.lock
