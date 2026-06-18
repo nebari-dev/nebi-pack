@@ -5,25 +5,23 @@ Static documentation site built with [Hugo](https://gohugo.io/) using the
 
 ## Required tools
 
-| Tool | nixpkgs name | Minimum version | Purpose |
-|------|-------------|-----------------|---------|
-| Hugo Extended | `hugo` | 0.158.0 | Static site generator (Extended variant required) |
-| Go | `go` | 1.25.0 | Hugo module resolution |
-
-Both tools must be available on `PATH`. Add them to your nix environment via `shell.nix` or your global nix profile.
+| Tool | Minimum version | Purpose |
+|------|-----------------|---------|
+| [Hugo Extended](https://gohugo.io/installation/) | 0.158.0 | Static site generator (Extended variant required) |
+| [Go](https://go.dev/dl/) | 1.25.0 | Hugo module resolution |
 
 > **Note:** The standard Hugo variant will not work — Hugo Extended is required for the theme's asset pipeline.
 
 ## Commands
 
-All commands must be run from the **repo root** via `nix-shell` (which provides Hugo).
+All commands must be run from the `docs/` directory.
 
 | Command | Purpose |
 |---------|---------|
-| `nix-shell --run "cd docs && hugo mod tidy"` | Fetch or update the nebari-hugo-theme dependency |
-| `nix-shell --run "cd docs && hugo server"` | Start local dev server with live reload at http://localhost:1313 |
-| `nix-shell --run "cd docs && hugo --minify"` | Production build — output written to `docs/public/` |
-| `nix-shell --run "cd docs && hugo mod get -u && hugo mod tidy"` | Upgrade theme to latest version |
+| `hugo mod tidy` | Fetch or update the nebari-hugo-theme dependency |
+| `hugo server` | Start local dev server with live reload at http://localhost:1313 |
+| `hugo --minify` | Production build — output written to `docs/public/` |
+| `hugo mod get -u && hugo mod tidy` | Upgrade theme to latest version |
 
 ## Adding content
 
