@@ -7,7 +7,7 @@ Static documentation site built with [Hugo](https://gohugo.io/) using the
 
 | Tool | nixpkgs name | Minimum version | Purpose |
 |------|-------------|-----------------|---------|
-| Hugo Extended | `hugo` | 0.116.0 | Static site generator (Extended variant required) |
+| Hugo Extended | `hugo` | 0.158.0 | Static site generator (Extended variant required) |
 | Go | `go` | 1.25.0 | Hugo module resolution |
 
 Both tools must be available on `PATH`. Add them to your nix environment via `shell.nix` or your global nix profile.
@@ -32,4 +32,4 @@ Content lives in `docs/docs/`. Add Markdown files there; Hugo derives the URL fr
 - `docs/docs/_index.md` → served at `/` (the homepage)
 - `docs/docs/install.md` → served at `/install/`
 
-Update `[[params.sidebar]]` entries in `hugo.toml` to add new pages to the sidebar navigation.
+Add `[[params.sidebar]]` entries to `hugo.toml` to control sidebar navigation (see the [theme docs](https://github.com/nebari-dev/nebari-hugo-theme) for the expected format).
