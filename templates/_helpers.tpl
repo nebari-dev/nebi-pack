@@ -103,15 +103,22 @@ the Keycloak hostname and keycloak.realm.
 
 {{/*
 OIDC discovery URL for in-cluster pod-to-Keycloak communication (split-horizon).
-Uses auth.oidc.discoveryURL when set, otherwise derives the in-cluster URL from
-the codecentric/keycloakx Service naming convention:
-  http://<releaseName>-keycloakx-http.<namespace>.svc.cluster.local:8080/realms/<realm>
+Order of precedence:
+  1. auth.oidc.discoveryURL (explicit)
+  2. https://<keycloak.hostname>/realms/<realm>
+  3. http://<keycloak.serviceHost>/realms/<realm>  (in-cluster default)
+The in-cluster default matches the codecentric/keycloakx Service naming
+convention that every nebari deployment ships with.
 */}}
 {{- define "nebari-nebi-pack.oidcDiscoveryURL" -}}
-{{- if .Values.auth.oidc.discoveryURL -}}
-{{- .Values.auth.oidc.discoveryURL -}}
+{{- $explicit := .Values.auth.oidc.discoveryURL | default "" -}}
+{{- $realm := .Values.keycloak.realm | default "nebari" -}}
+{{- if $explicit -}}
+{{- $explicit -}}
+{{- else if .Values.keycloak.hostname -}}
+{{- printf "https://%s/realms/%s" .Values.keycloak.hostname $realm -}}
 {{- else -}}
-{{- printf "http://%s-keycloakx-http.%s.svc.cluster.local:8080/realms/%s" (.Values.keycloak.releaseName | default "keycloak") (.Values.keycloak.namespace | default "keycloak") (.Values.keycloak.realm | default "nebari") -}}
+{{- printf "http://%s/realms/%s" (.Values.keycloak.serviceHost | default "keycloak-keycloakx-http.keycloak.svc.cluster.local:8080") $realm -}}
 {{- end -}}
 {{- end }}
 

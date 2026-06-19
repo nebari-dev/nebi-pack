@@ -103,17 +103,16 @@ auth:
     clientSecretName: ""
 
 # Keycloak configuration used to derive OIDC URLs when not explicitly set.
-# hostname derives issuerURL; releaseName/namespace/realm derive discoveryURL.
+# hostname derives issuerURL; serviceHost/realm derive discoveryURL.
 keycloak:
   # Public hostname — derives issuerURL as https://<hostname>/realms/<realm>.
   # Defaults to keycloak.<base domain of nebariapp.hostname>.
   hostname: ""
-  # Helm release name of the Keycloak deploy (codecentric/keycloakx convention).
-  # The in-cluster Service is named <releaseName>-keycloakx-http.
-  releaseName: "keycloak"
-  # Namespace where Keycloak is deployed.
-  namespace: "keycloak"
-  # Keycloak realm used for both issuerURL and discoveryURL derivation.
+  # In-cluster Keycloak service host (host:port) used to derive discoveryURL.
+  # The codecentric/keycloakx chart names its Service <release>-keycloakx-http;
+  # defaults to the canonical nebari deploy (release=keycloak, namespace=keycloak).
+  serviceHost: "keycloak-keycloakx-http.keycloak.svc.cluster.local:8080"
+  # Realm name; matches the standard Nebari operator setup.
   realm: "nebari"
 
 # Server configuration
