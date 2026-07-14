@@ -40,11 +40,10 @@ make docs-test      # run unit tests
 
 Content lives in `docs/src/content/docs/`. Each `.md` or `.mdx` file becomes a page. The sidebar is configured in `docs/astro.config.mjs` under `starlight.sidebar`.
 
-### Updating nebari design tokens
+### Updating the shared theme
 
-`docs/src/styles/nebari-tokens.css` is copied from the [nebari-design](https://github.com/nebari-dev/nebari-design) repository. To update the primitive color ramps, fetch the latest from the reference pack:
+Nebari branding (colors, fonts, logo, favicon, footer) comes from the [`@nebari/starlight`](https://github.com/nebari-dev/starlight) plugin, not vendored files. To pick up a theme update, bump the version in `docs/package.json`:
 
 ```bash
-gh api "repos/nebari-dev/llm-serving-pack/contents/docs/src/styles/nebari-tokens.css?ref=main" \
-  --jq '.content' | base64 -d > docs/src/styles/nebari-tokens.css
+cd docs && nix-shell --run "npm install @nebari/starlight@latest"
 ```
