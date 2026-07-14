@@ -1,10 +1,6 @@
 ---
 title: Introduction
 description: Documentation for the Nebari Nebi Pack, an environment management solution for Nebari.
-slug: /
-sidebar_position: 1
-last_update:
-  date: 2026-06-12
 ---
 
 # Nebari Nebi Pack
