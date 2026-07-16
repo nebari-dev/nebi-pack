@@ -42,6 +42,17 @@ nebariapp:
       # token for a Nebi-audience token in Keycloak. Required by the jhub-apps
       # environment selector and Nebi auto-auth.
       enabled: true
+    # denyRedirect passes through to NebariApp.spec.auth.denyRedirect: header
+    # match rules for requests that should get a 401 instead of an OIDC
+    # redirect. Without it, non-navigation requests fired in parallel on page
+    # load (site.webmanifest, favicons, XHR) each start their own OAuth flow
+    # and overwrite each other's state cookies, which can lock browsers into
+    # an infinite auth redirect loop. Recommended:
+    #   denyRedirect:
+    #     - name: Sec-Fetch-Dest
+    #       type: RegularExpression
+    #       value: ^(manifest|empty|image|font|style|script)$
+    denyRedirect: []
   # landingPage controls whether and how this service appears on the Nebari landing page
   # portal (served by nebari-landing / nebari-webapi).
   landingPage:

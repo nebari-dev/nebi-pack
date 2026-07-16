@@ -29,6 +29,10 @@ spec:
     tokenExchange:
       enabled: {{ .enabled | default false }}
     {{- end }}
+    {{- with .denyRedirect }}
+    denyRedirect:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   {{- end }}
   {{- with .Values.nebariapp.landingPage }}
   landingPage:
