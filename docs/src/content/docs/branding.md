@@ -370,7 +370,7 @@ The branding render path has its own test suite, since branding is off by defaul
 `helm template` smoke checks never exercise it:
 
 ```bash
-make test        # or: uv run pytest tests/test_branding.py
+make test
 ```
 
 It asserts the default render is unchanged, that any single field switches branding on, and that

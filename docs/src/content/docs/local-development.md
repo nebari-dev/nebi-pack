@@ -52,6 +52,9 @@ For template-level work you do not need Tilt at all. `helm template` is much fas
 the derived values in these docs were checked:
 
 ```bash
+# Install helm dependencies
+make deps
+
 # The chart requires a hostname whenever nebariapp is enabled
 helm template nebi . --set nebariapp.hostname=nebi.example.com
 

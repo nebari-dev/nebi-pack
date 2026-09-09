@@ -54,7 +54,7 @@ Chart render tests live in `tests/` and run `helm template` against the chart,
 asserting on the rendered manifests. They need `helm` and [uv]; no cluster:
 
 ```bash
-make test        # or: uv run pytest
+make test
 ```
 
 CI runs them as the `chart` job in `.github/workflows/test.yaml`.
