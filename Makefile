@@ -1,12 +1,15 @@
 # Minimal Makefile for local development
 # Tilt handles the dev loop via its UI; `make test` runs the chart render tests
 
-.PHONY: up down test
+.PHONY: deps up down test
+
+deps:
+	helm dependency build
 
 # Start local development environment
 # - ctlptl apply is idempotent (creates cluster only if not exists)
 # - tilt up starts the dev loop with UI at http://localhost:10350
-up:
+up: deps
 	ctlptl apply -f ctlptl-config.yaml
 	@pgrep -f "tilt up" >/dev/null && echo "Tilt already running at http://localhost:10350" || tilt up
 
@@ -17,7 +20,7 @@ down:
 	ctlptl delete -f ctlptl-config.yaml
 
 # Run the chart render tests (helm template + assertions in tests/)
-test:
+test: deps
 	uv run pytest
 
 DOCS_DIR := docs

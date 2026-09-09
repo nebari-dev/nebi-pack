@@ -8,7 +8,7 @@ description: Run the chart on a local k3d cluster with Tilt, and work on the doc
 - [ctlptl](https://github.com/tilt-dev/ctlptl) — creates the local cluster and registry
 - [Tilt](https://tilt.dev/) — the deploy loop
 - [k3d](https://k3d.io/) and Docker — the cluster itself
-- Helm 3.8+
+- Helm 3.17+
 
 ## Bring the cluster up
 
@@ -52,6 +52,9 @@ For template-level work you do not need Tilt at all. `helm template` is much fas
 the derived values in these docs were checked:
 
 ```bash
+# Install helm dependencies
+make deps
+
 # The chart requires a hostname whenever nebariapp is enabled
 helm template nebi . --set nebariapp.hostname=nebi.example.com
 

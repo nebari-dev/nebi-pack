@@ -1,9 +1,9 @@
 """Helpers for rendering this chart with `helm template` and asserting on the result.
 
-These tests are pure render tests: no cluster, no network. They call the real
-`helm` binary so the assertions cover the templates as Helm actually evaluates
-them (including `include`, `toPrettyJson` and `sha256sum`), which is the part a
-YAML-only lint pass cannot check.
+These tests are pure render tests: no cluster, no network, but require the dependencies
+to be built ahead of time. They call the real `helm` binary so the assertions cover the
+templates as Helm actually evaluates them (including `include`, `toPrettyJson` and `sha256sum`),
+which is the part a YAML-only lint pass cannot check.
 """
 
 import json

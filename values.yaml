@@ -4,13 +4,14 @@
 # =============================================================================
 # Nebari Integration
 # =============================================================================
-# Creates a NebariApp CRD that configures routing and auth via nebari-operator.
-# Set to false when deploying outside of Nebari.
+# NebariApp CR (https://github.com/nebari-dev/nebari-operator).
+# Rendered through the official nebari-app.nebariApp template 
+# (https://github.com/nebari-dev/nebari-operator/tree/main/charts/nebari-app) with templating enabled.
 nebariapp:
   enabled: true
-  # hostname: nebi.example.com  # Required when enabled
+  hostname: '{{ fail "nebariapp.hostname is required if nebariapp.enabled is true" }}'
   service:
-    name: ""  # Defaults to {{ fullname }}
+    name: '{{ include "nebari-nebi-pack.fullname" . | toJson }}'
     port: 80
   routing:
     routes:

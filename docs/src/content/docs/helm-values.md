@@ -3,7 +3,7 @@ title: Helm values
 description: Every value the nebari-nebi-pack chart accepts, and what each one derives when left empty.
 ---
 
-`nebari-nebi-pack` is a single chart — no subcharts. To see the shipped defaults for the version
+`nebari-nebi-pack` is a Helm chart with the official `nebari-app` chart as a subchart. To see the shipped defaults for the version
 you are installing:
 
 ```bash
@@ -21,14 +21,16 @@ stock Nebari deployment, so overriding them is only necessary when your cluster 
 
 ## Nebari integration
 
-The `nebariapp.*` tree becomes a `NebariApp` resource (`reconcilers.nebari.dev/v1`) that the
-nebari-operator turns into routing, TLS, Keycloak clients, and a landing-page tile.
+The `nebariapp.*` tree is passed to the official `nebari-app` chart's `nebariApp` template
+(https://github.com/nebari-dev/nebari-operator/tree/main/charts/nebari-app) with templating enabled.
+It becomes a `NebariApp` resource (`reconcilers.nebari.dev/v1`) that the nebari-operator turns into
+routing, TLS, Keycloak clients, and a landing-page tile.
 
 | Value | Default | Purpose |
 | --- | --- | --- |
 | `nebariapp.enabled` | `true` | Set `false` to deploy outside Nebari. No `NebariApp` is rendered, and the OIDC environment variables are dropped with it — routing and auth become your responsibility. |
 | `nebariapp.hostname` | — | Required. See above. |
-| `nebariapp.service.name` | `""` | Service the `NebariApp` routes to. Empty derives the chart fullname. |
+| `nebariapp.service.name` | chart fullname | Service the `NebariApp` routes to. Defaults to the chart fullname template. |
 | `nebariapp.service.port` | `80` | Service port to route to. |
 | `nebariapp.routing.routes` | `[{pathPrefix: /}]` | Paths routed to Nebi. |
 | `nebariapp.routing.publicRoutes` | `/api/`, `/docs/` | Paths that **bypass the gateway OIDC filter**, so bearer-token API callers (such as the jhub-apps environment selector) reach Nebi directly. Nebi validates the token itself. |

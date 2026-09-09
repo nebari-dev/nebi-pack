@@ -45,6 +45,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build helm dependencies
+        if: steps.check.outputs.exists == 'false'
+        run: helm dependencies build
+
       - name: Package chart
         if: steps.check.outputs.exists == 'false'
         run: helm package .
