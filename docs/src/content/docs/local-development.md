@@ -8,7 +8,7 @@ description: Run the chart on a local k3d cluster with Tilt, and work on the doc
 - [ctlptl](https://github.com/tilt-dev/ctlptl) — creates the local cluster and registry
 - [Tilt](https://tilt.dev/) — the deploy loop
 - [k3d](https://k3d.io/) and Docker — the cluster itself
-- Helm 3.8+
+- Helm 3.17+
 
 ## Bring the cluster up
 

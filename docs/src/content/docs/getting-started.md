@@ -10,7 +10,7 @@ description: Install the Nebari Nebi Pack Helm chart on a Nebari cluster and ope
   `NebariApp` CRD (`reconcilers.nebari.dev/v1`) the chart emits, and turns it into routing, TLS,
   and Keycloak clients.
 - A Keycloak realm the cluster's users log in to (`nebari` by default).
-- Helm 3.8+ (OCI registry support).
+- Helm 3.17+ (required for nebari-app subchart).
 - One DNS name pointing at the cluster gateway, for the Nebi UI.
 - A default StorageClass, or a name to pass for `persistence.storageClassName` and
   `postgres.storage.storageClassName`. The environments volume is `ReadWriteOnce`.
