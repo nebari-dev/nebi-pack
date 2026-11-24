@@ -220,12 +220,16 @@ branding:
 # does NOT iterate /etc/ssl/certs/, so both the bind mount AND the env var
 # are required — the env var is set automatically when this value is set.
 #
-# The named ConfigMap must already exist in the release namespace and must
-# have a key `ca-bundle.crt` containing one or more PEM-encoded CA certs.
-# When empty (default), no mount is added and `helm template` output is
-# byte-identical to prior versions of the chart.
+# The named ConfigMap must already exist in the release namespace and hold
+# one or more PEM-encoded CA certs under `key`. The bundle replaces the
+# container's default trust store, so it should include the public roots
+# too. On Nebari, trust-manager projects `nebari-trust-bundle` into every
+# namespace with key `ca-certificates.crt`.
+# When configMapName is empty (default), no mount is added and
+# `helm template` output is byte-identical to prior versions of the chart.
 orgCABundle:
   configMapName: ""
+  key: ca-bundle.crt
 
 # =============================================================================
 # Embedded PostgreSQL

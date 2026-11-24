@@ -153,6 +153,7 @@ URL and value restrictions, and how to verify a deploy — in [Branding](/brandi
 | Value | Default | Purpose |
 | --- | --- | --- |
 | `orgCABundle.configMapName` | `""` | Mounts a ConfigMap of extra CA certificates into the pod and sets `SSL_CERT_FILE` to `/etc/ssl/certs/org-ca.crt`. |
+| `orgCABundle.key` | `ca-bundle.crt` | The key in that ConfigMap holding the PEM-encoded certificates. |
 
 Needed on clusters with a TLS-intercepting egress proxy whose CA is not in the image's trust
 store — without it, pixi/rattler outbound HTTPS to conda-forge, PyPI, or GitHub fails with
@@ -162,15 +163,25 @@ Both the mount and the environment variable are required: Rust's `rustls-native-
 pixi/rattler use, honors `SSL_CERT_FILE` but does not iterate `/etc/ssl/certs/`. Setting this
 value does both.
 
-The ConfigMap must already exist in the release namespace and must have a `ca-bundle.crt` key
-holding one or more PEM-encoded CA certificates:
+The ConfigMap must already exist in the release namespace and hold one or more PEM-encoded CA
+certificates under `orgCABundle.key` (`ca-bundle.crt` by default):
 
 ```bash
 kubectl create configmap org-ca-bundle -n nebi \
   --from-file=ca-bundle.crt=/path/to/corporate-ca.pem
 ```
 
-When empty, no mount is added and rendered output is byte-identical to chart versions from before
+On Nebari, trust-manager projects the cluster's CA bundle into every namespace as the ConfigMap
+`nebari-trust-bundle` with the key `ca-certificates.crt`. It includes the public roots, the
+cluster's own CA on self-signed clusters, and any org CA:
+
+```yaml
+orgCABundle:
+  configMapName: nebari-trust-bundle
+  key: ca-certificates.crt
+```
+
+When `configMapName` is empty, no mount is added and rendered output is byte-identical to chart versions from before
 the feature existed.
 
 ## Embedded PostgreSQL
