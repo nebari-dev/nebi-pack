@@ -140,7 +140,7 @@ Rebrands the Nebi web UI at deploy time. When any field is set the chart renders
 | --- | --- | --- |
 | `branding.title` | `""` | Browser tab title. Empty uses `Nebi - Environment Management`. |
 | `branding.logoUrl` | `""` | Header logo. Must be same-origin — a root-relative path or a base64 `data:` image URI. External URLs are rejected by the frontend. |
-| `branding.logoUrlDark` | `""` | Optional dark-mode logo. Empty falls back to `logoUrl`. Needs a newer image than the pinned tag. |
+| `branding.logoUrlDark` | `""` | Optional dark-mode logo. Empty falls back to `logoUrl`. Needs nebi v0.16 or later. |
 | `branding.faviconUrl` | `""` | Favicon, same URL rules as `logoUrl`. |
 | `branding.theme.light` | `{}` | Light-mode token overrides, keyed by camelCase Nebari design-system token name (`primary`, `primaryHover`, `header`, …). Applied to `:root`. |
 | `branding.theme.dark` | `{}` | Dark-mode token overrides, same keys. Applied to `.dark`. |

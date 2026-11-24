@@ -342,8 +342,8 @@ Runtime branding needs a Nebi image that supports it:
 | Feature | Requires |
 | --- | --- |
 | `title`, `logoUrl`, `faviconUrl`, `theme` | Nebi with runtime theming support — the tag pinned in `values.yaml` has it. |
-| `logoUrlDark` | A newer Nebi than the pinned tag ([nebi#516](https://github.com/nebari-dev/nebi/pull/516)). On an older image the key is ignored and dark mode keeps using `logoUrl`, so setting it early is harmless but has no effect until you bump `image.tag`. |
-| Tokens marked *(1)* above | A Nebi image with the Nebari design-registry frontend ([nebi#460](https://github.com/nebari-dev/nebi/pull/460)). Older images accept `background`, `foreground`, `card`, `cardForeground`, `popover`, `popoverForeground`, `primary`, `primaryForeground`, `primaryHover`, `navHover`, `secondary`, `secondaryForeground`, `muted`, `mutedForeground`, `accent`, `accentForeground`, `destructive`, `destructiveForeground`, `border`, `input`, `ring` and `radius`; other keys are written but paint nothing. |
+| `logoUrlDark` | Nebi v0.16 or later ([nebi#516](https://github.com/nebari-dev/nebi/pull/516)). On an older image the key is ignored and dark mode keeps using `logoUrl`. |
+| Tokens marked *(1)* above | Nebi v0.16 or later, which has the Nebari design-registry frontend ([nebi#460](https://github.com/nebari-dev/nebi/pull/460)). Older images accept `background`, `foreground`, `card`, `cardForeground`, `popover`, `popoverForeground`, `primary`, `primaryForeground`, `primaryHover`, `navHover`, `secondary`, `secondaryForeground`, `muted`, `mutedForeground`, `accent`, `accentForeground`, `destructive`, `destructiveForeground`, `border`, `input`, `ring` and `radius`; other keys are written but paint nothing. |
 
 ## Verifying a deploy
 
