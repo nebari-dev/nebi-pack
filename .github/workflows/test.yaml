@@ -44,8 +44,8 @@ jobs:
           nic-version: latest
 
       # Install this chart at the commit under test and wait for the ArgoCD
-      # Application to be Synced and Healthy.
-      - uses: nebari-dev/deploy-nebari-action/add-software-pack@add-software-pack
+      # Application's sync to succeed and for it to be Healthy.
+      - uses: nebari-dev/deploy-nebari-action/add-software-pack@34df7d44f48a9077c548dd6637e8012682b4ee9d # add-software-pack branch, nebari-dev/deploy-nebari-action#49
         with:
           application-manifest: .github/ci/nebi-pack-application.yaml
           target-revision: ${{ github.sha }}
