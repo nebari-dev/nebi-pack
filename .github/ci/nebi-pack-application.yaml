@@ -6,11 +6,10 @@ metadata:
 spec:
   project: nebari-apps
   source:
-    # The sandbox bind-mounts the bootstrapped gitops repo; add-software-pack
-    # copies this chart to <gitops>/nebi-pack and envsubst-renders ${GITOPS_DIR}.
-    repoURL: "file://${GITOPS_DIR}"
-    targetRevision: HEAD
-    path: nebi-pack
+    repoURL: https://github.com/nebari-dev/nebi-pack
+    # Overridden in CI with the commit under test.
+    targetRevision: main
+    path: .
     helm:
       releaseName: nebi-pack
       # Only the hostname — the chart derives the full Keycloak OIDC config from
