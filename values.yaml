@@ -64,7 +64,7 @@ nebariapp:
 # =============================================================================
 image:
   repository: quay.io/nebari/nebi
-  tag: sha-5ca877a
+  tag: sha-07d490b
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -170,10 +170,8 @@ branding:
   # logo; light mode always uses logoUrl. Set only logoUrl to reuse one asset in
   # both schemes (the behaviour before this field existed).
   #
-  # Needs nebi >= the release containing logoUrlDark support (nebari-dev/nebi
-  # PR 516) - the pinned image tag above predates it. On an older image the key
-  # is simply ignored and dark mode keeps using logoUrl, so setting it early is
-  # harmless but has no effect until the image is bumped.
+  # Needs nebi v0.16 or later (nebari-dev/nebi PR 516). On an older image the
+  # key is ignored and dark mode keeps using logoUrl.
   logoUrlDark: ""
   # Favicon, same URL rules as logoUrl. Empty uses the built-in favicon.
   faviconUrl: ""
