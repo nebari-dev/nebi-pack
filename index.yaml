@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  nebari-nebi-pack:
+  - apiVersion: v2
+    appVersion: "0.16"
+    created: "2026-11-24T15:52:25.224886667Z"
+    dependencies:
+    - name: nebari-app
+      repository: oci://quay.io/nebari/charts
+      version: '>=0.1.1'
+    description: A Helm chart for deploying Nebi (environment management platform)
+      on Nebari
+    digest: 912488d943beee24fd436066c1fed53dd4c04e2f2d52a0ed704d51f7a19f2662
+    name: nebari-nebi-pack
+    type: application
+    urls:
+    - https://github.com/nebari-dev/nebi-pack/releases/download/nebari-nebi-pack-0.1.5/nebari-nebi-pack-0.1.5.tgz
+    version: 0.1.5
+generated: "2026-11-24T15:52:25.22372882Z"
