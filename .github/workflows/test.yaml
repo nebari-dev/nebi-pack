@@ -39,7 +39,7 @@ jobs:
       # Full Nebari platform (NIC + ArgoCD + Keycloak + operator + gateway) so
       # the chart is exercised the way it actually runs: the operator provisions
       # the OIDC client and the gateway enforces auth.
-      - uses: nebari-dev/deploy-nebari-action@main
+      - uses: nebari-dev/deploy-nebari-action@0156325a933300fe42afd63371b30a28ff6678cd # v0.4.0
         id: nebari
         with:
           nic-version: latest
@@ -47,7 +47,7 @@ jobs:
       # Install this chart at the commit under test and wait for the ArgoCD
       # Application's sync to succeed, for it to be Healthy, and for its
       # NebariApp to be Ready.
-      - uses: nebari-dev/deploy-nebari-action/add-software-pack@79264efb520c6ae76bd67fd9b26897638efa001f # add-software-pack branch, nebari-dev/deploy-nebari-action#49
+      - uses: nebari-dev/deploy-nebari-action/add-software-pack@0156325a933300fe42afd63371b30a28ff6678cd # v0.4.0
         with:
           application-manifest: .github/ci/nebi-pack-application.yaml
           target-revision: ${{ github.sha }}
